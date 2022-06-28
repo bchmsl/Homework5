@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.LoginActivity">
+    tools:context=".ui.login.LoginActivity">
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/btnBack"
@@ -47,14 +47,15 @@
         app:boxStrokeWidth="2dp"
         app:boxStrokeWidthFocused="3dp"
         app:layout_constraintBottom_toTopOf="@id/btnSignup"
-        app:layout_constraintTop_toBottomOf="@id/tvRegister">
+        app:layout_constraintTop_toBottomOf="@id/tvRegister"
+        app:startIconDrawable="@drawable/ic_email">
 
         <androidx.appcompat.widget.AppCompatEditText
             android:id="@+id/etUsername"
-            tools:text="the_jane"
-            android:fontFamily="sans-serif"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:fontFamily="sans-serif"
+            tools:text="the_jane" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -76,8 +77,8 @@
         android:layout_height="wrap_content"
         android:layout_margin="15dp"
         android:fontFamily="sans-serif"
+        android:text="@string/terms"
         android:textColor="@color/black"
-        app:layout_constraintTop_toBottomOf="@id/btnSignup"
-        android:text="@string/terms"/>
+        app:layout_constraintTop_toBottomOf="@id/btnSignup" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

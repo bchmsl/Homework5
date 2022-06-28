@@ -1,15 +1,19 @@
-package com.bchmsl.homework5.ui
+package com.bchmsl.homework5.ui.register
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log.d
 import androidx.core.widget.addTextChangedListener
-import com.bchmsl.homework5.R
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.lifecycle.lifecycleScope
 import com.bchmsl.homework5.databinding.ActivityRegisterStep1Binding
 import com.bchmsl.homework5.tools.*
-import com.google.android.material.snackbar.Snackbar
+import com.bchmsl.homework5.ui.main.dataStore
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 
 class RegisterActivityStep1 : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
@@ -24,6 +28,13 @@ class RegisterActivityStep1 : AppCompatActivity() {
     private fun init() {
         auth = FirebaseAuth.getInstance()
         listeners()
+        setText()
+    }
+
+    private fun setText() {
+        lifecycleScope.launch {
+            binding.tvLastEmail.text = getEmail() ?: ""
+        }
     }
 
     private fun listeners() {
@@ -42,6 +53,9 @@ class RegisterActivityStep1 : AppCompatActivity() {
             binding.tvError.makeError(enabled = false)
             binding.tilPassword.isErrorEnabled = false
         }
+        binding.tvLastEmail.setOnClickListener {
+            binding.etEmail.setText(binding.tvLastEmail.text)
+        }
     }
 
     private fun signUp() {
@@ -54,8 +68,10 @@ class RegisterActivityStep1 : AppCompatActivity() {
 
                 auth.createUserWithEmailAndPassword(email.value, password.value)
                     .addOnCompleteListener {
-
                         if (it.isSuccessful) {
+                            lifecycleScope.launch {
+                                saveEmail()
+                            }
                             val intent = Intent(this, RegisterActivityStep2::class.java)
                             startActivity(intent)
                         } else {
@@ -73,5 +89,18 @@ class RegisterActivityStep1 : AppCompatActivity() {
             binding.tvError.makeError("Email is invalid!", true)
             binding.tilEmail.error = "Check Email!"
         }
+    }
+
+    private suspend fun saveEmail() {
+        val dataStoreKey = stringPreferencesKey("email")
+        dataStore.edit { user ->
+            user[dataStoreKey] = binding.etEmail.text.toString()
+        }
+    }
+
+    private suspend fun getEmail(): String? {
+        val dataStoreKey = stringPreferencesKey("email")
+        val preferences = dataStore.data.first()
+        return preferences[dataStoreKey]
     }
 }

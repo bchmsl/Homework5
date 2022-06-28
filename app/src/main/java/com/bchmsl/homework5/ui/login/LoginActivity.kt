@@ -1,17 +1,22 @@
-package com.bchmsl.homework5.ui
+package com.bchmsl.homework5.ui.login
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import androidx.core.widget.addTextChangedListener
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.lifecycle.lifecycleScope
 import com.bchmsl.homework5.databinding.ActivityLoginBinding
 import com.bchmsl.homework5.tools.*
+import com.bchmsl.homework5.ui.discover.DiscoverActivity
+import com.bchmsl.homework5.ui.main.dataStore
 import com.google.android.gms.tasks.Task
-import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseAuthInvalidUserException
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
@@ -26,6 +31,13 @@ class LoginActivity : AppCompatActivity() {
     private fun init() {
         auth = FirebaseAuth.getInstance()
         listeners()
+        setText()
+    }
+
+    private fun setText() {
+        lifecycleScope.launch {
+            binding.tvLastEmail.text = getEmail() ?: ""
+        }
     }
 
     private fun listeners() {
@@ -41,6 +53,9 @@ class LoginActivity : AppCompatActivity() {
         binding.etPassword.addTextChangedListener {
             binding.tilPassword.isErrorEnabled = false
         }
+        binding.tvLastEmail.setOnClickListener {
+            binding.etEmail.setText(binding.tvLastEmail.text)
+        }
     }
 
     private fun login() {
@@ -52,6 +67,9 @@ class LoginActivity : AppCompatActivity() {
                 auth.signInWithEmailAndPassword(email.value, password.value)
                     .addOnCompleteListener {
                         firebaseCompleted(it)
+                        lifecycleScope.launch {
+                            saveEmail()
+                        }
                     }
             } else {
                 binding.tilPassword.error = "Check Password!"
@@ -63,8 +81,7 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-
-    private fun firebaseCompleted(it: Task<AuthResult>){
+    private fun firebaseCompleted(it: Task<AuthResult>) {
         if (it.isSuccessful) {
             val intent = Intent(this, DiscoverActivity::class.java)
             intent.flags =
@@ -73,12 +90,25 @@ class LoginActivity : AppCompatActivity() {
 
 
             startActivity(intent)
-        }  else {
+        } else {
             val handler = FirebaseExceptionHandler()
 
             Log.d("TAG-Firebase", it.exception.toString())
             binding.tvError.makeError(handler.handleException(it.exception), true)
 
         }
+    }
+
+    private suspend fun saveEmail() {
+        val dataStoreKey = stringPreferencesKey("email")
+        dataStore.edit { user ->
+            user[dataStoreKey] = binding.etEmail.text.toString()
+        }
+    }
+
+    private suspend fun getEmail(): String? {
+        val dataStoreKey = stringPreferencesKey("email")
+        val preferences = dataStore.data.first()
+        return preferences[dataStoreKey]
     }
 }

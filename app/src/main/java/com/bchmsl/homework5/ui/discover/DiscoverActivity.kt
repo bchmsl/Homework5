@@ -1,9 +1,10 @@
-package com.bchmsl.homework5.ui
+package com.bchmsl.homework5.ui.discover
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import com.bchmsl.homework5.databinding.ActivityDiscoverBinding
+import com.bchmsl.homework5.ui.main.MainActivity
 import com.google.firebase.auth.FirebaseAuth
 
 class DiscoverActivity : AppCompatActivity() {
@@ -15,7 +16,8 @@ class DiscoverActivity : AppCompatActivity() {
         setContentView(binding.root)
         init()
     }
-    private fun init(){
+
+    private fun init() {
         auth = FirebaseAuth.getInstance()
         setText()
         listeners()
@@ -32,6 +34,6 @@ class DiscoverActivity : AppCompatActivity() {
 
     private fun setText() {
         binding.tvEmail.text = auth.currentUser?.email
-        binding.tvUsername.text = intent.getStringExtra("username")
+
     }
 }
