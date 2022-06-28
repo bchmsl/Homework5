@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Homework5</string>
+    <string name="photo">photo</string>
+    <string name="log_in">Log In</string>
+    <string name="register">Register</string>
+    <string name="next">Next</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="sign_up">sign up</string>
+    <string name="username">Username</string>
+    <string name="terms">By signing up, you agree to Photo\'s <u>Terms of Service</u> and <u>Privacy Policy</u>.</string>
+    <string name="discover">Discover</string>
+    <string name="log_out">Log Out</string>
+    <string name="password_error">Password must be at least 8 symbols.</string>
+    <string name="email_error">Check email and try again.</string>
+</resources>
